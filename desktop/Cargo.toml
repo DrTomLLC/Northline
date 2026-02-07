@@ -2,8 +2,12 @@
 name = "northline-desktop"
 version = "0.1.0"
 edition = "2024"
+build = "build.rs"
 
 [dependencies]
-slint = "1"
+slint = { version = "1.15.0", features = ["backend-winit", "renderer-femtovg"] }
 northline-core = { path = "../core" }
 northline-crypto = { path = "../crypto" }
+
+[build-dependencies]
+slint-build = "1"

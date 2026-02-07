@@ -1,0 +1,50 @@
+import { LineEdit, Button } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    preferred-width: 1200px;
+    preferred-height: 800px;
+    title: "Northline";
+
+    in-out property<string> current_query;
+    callback submit-query();
+
+    // Full window background
+    Rectangle {
+        width: 100%;
+        height: 100%;
+
+        // Messages placeholder area
+        Rectangle {
+            x: 0px;
+            y: 0px;
+            width: 100%;
+            height: 80%;
+        }
+
+        // Input row at bottom
+        Rectangle {
+            x: 0px;
+            y: parent.height - 40px;
+            width: parent.width;
+            height: 40px;
+
+            LineEdit {
+                x: 8px;
+                y: 8px;
+                width: parent.width - 120px;
+                height: 24px;
+                text <=> current_query;
+                accepted => { submit-query(); }
+            }
+
+            Button {
+                x: parent.width - 96px;
+                y: 8px;
+                width: 80px;
+                height: 24px;
+                text: "Ask";
+                clicked => { submit-query(); }
+            }
+        }
+    }
+}
