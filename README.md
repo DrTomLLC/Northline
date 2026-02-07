@@ -1,6 +1,6 @@
 # Northline
 
-Northline is a safety‑critical, privacy‑first local AI assistant and research engine. It combines a modular Rust core with a native Slint desktop UI, Perplexity‑style answers, and support for local and remote LLMs (OpenAI, Ollama, LM Studio, and drop‑in GGUF models).[web:52][web:55][web:59][web:94][web:100]
+Northline is a safety‑critical, privacy‑first local AI assistant and research engine. It combines a modular Rust core with a native Slint desktop UI, Perplexity‑style answers, and support for local and remote LLMs (OpenAI, Ollama, LM Studio, and drop‑in GGUF models).
 
 ## Vision
 
@@ -9,20 +9,20 @@ Northline is designed as a frozen, safety‑critical **kernel** you can build on
 - A panic‑free Rust core with explicit, fully coded errors.
 - Strong privacy and encryption by default.
 - Modular, plugin‑friendly architecture.
-- A Perplexity‑class UX today, and a Comet‑style AI browser in future versions.[web:58][web:61][web:64]
+- A Perplexity‑class UX today, and a Comet‑style AI browser in future versions.
 
 ## Key features (planned v1)
 
 - **Native desktop UI (Slint + Rust)**  
-  Perplexity‑style chat interface with conversations, answers, and citations, no Docker or terminal glue.[web:46][web:35]
+  Perplexity‑style chat interface with conversations, answers, and citations, no Docker or terminal glue.
 
 - **Multiple model backends**  
-  - OpenAI‑compatible APIs (OpenAI, LM Studio, others).[web:52][web:53][web:59]  
+  - OpenAI‑compatible APIs (OpenAI, LM Studio, others).
   - Ollama for local models.  
-  - Drop‑in local GGUF models from a `models/` directory.[web:94][web:100]
+  - Drop‑in local GGUF models from a `models/` directory.
 
 - **Deep web search with SearXNG**  
-  Self‑hosted SearXNG as the primary search engine for RAG, configurable and privacy‑respecting.[web:79][web:82]
+  Self‑hosted SearXNG as the primary search engine for RAG, configurable and privacy‑respecting.
 
 - **Ghost Mode**  
   “Leave no trace” mode with:
@@ -31,8 +31,8 @@ Northline is designed as a frozen, safety‑critical **kernel** you can build on
   - Network calls minimized to only what’s strictly required.
 
 - **Safety‑critical design**  
-  - No panics in production code; all operations return structured `Result` types.[web:98][web:99][web:104]  
-  - Strong encryption for stored secrets and configuration.[web:72][web:73]  
+  - No panics in production code; all operations return structured `Result` types. 
+  - Strong encryption for stored secrets and configuration.
   - Clear error codes and human‑readable error messages.
 
 ## Architecture
