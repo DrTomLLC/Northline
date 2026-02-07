@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "core",
+    "crypto",
+    "desktop",
+]
+resolver = "2"
