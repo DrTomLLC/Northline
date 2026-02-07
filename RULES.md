@@ -19,7 +19,7 @@ These rules are non‑negotiable. Northline is a **safety‑critical, privacy‑
 
 4. **Rust‑only implementation**
    - No C, C++, Zig, Node, or Docker in this repo.
-   - If bindings to native libraries are needed (e.g., for local models), keep them behind small, well‑tested Rust wrappers.
+   - If bindings to native libraries are needed (e.g., for GGUF), keep them behind small, well‑tested Rust wrappers.
 
 5. **Modular, small, focused files**
    - Each module has a single responsibility.
@@ -33,10 +33,33 @@ These rules are non‑negotiable. Northline is a **safety‑critical, privacy‑
 
 7. **Tests are mandatory for safety‑critical paths**
    - Any code dealing with:
-     - Config loading.
+     - Config loading/saving.
      - Encryption/decryption.
      - Network calls.
-     - Model loading.
-   - Must have tests that cover both success and failure paths.
+     - Model loading and inference.
+   - Must have tests covering both success and failure paths.
+
+8. **Automated tool pipeline**
+   - The preferred order for checks is:
+     1. `cargo fmt`
+     2. `cargo clippy --workspace -- -D warnings`
+     3. `cargo test --workspace`
+     4. `cargo nextest run` (if configured)
+     5. `cargo llvm-cov`
+     6. `cargo audit`
+     7. `cargo deny check`
+     8. `cargo vet`
+     9. `cargo geiger`
+     10. `cargo careful`
+     11. `cargo udeps`
+     12. `cargo outdated`
+     13. `cargo machete`
+     14. `cargo semver-checks`
+     15. `cargo mutants` on critical modules[web:73][web:76][web:173]
+
+   - If any tool is unavailable or fails to run, it must be:
+     - Skipped for that run.
+     - Documented (log, TODO, or CI note).
+   - No single tool failure should prevent forward progress, but incomplete tool runs must be visible.
 
 Breaking these rules is treated as a bug, even if the code compiles.
