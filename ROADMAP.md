@@ -32,21 +32,25 @@ Northline is a safety‑critical, privacy‑first local AI assistant and researc
 
 ## Milestone 2 — Providers & Local Models
 
-**Goal:** Engine can talk to OpenAI, LM Studio, Ollama, and a local GGUF model.
+**Goal:** Engine can talk to OpenAI, LM Studio, Ollama, and a local GGUF model, with optional multi‑model comparison.
 
 - Implement `ModelBackend` for:
   - `OpenAiBackend` (OpenAI‑compatible HTTP).
-  - `LmStudioBackend` (local OpenAI‑compatible server).[web:52][web:55][web:59]
+  - `LmStudioBackend` (local OpenAI‑compatible server).
   - `OllamaBackend`.
-  - `LocalModelBackend` (GGUF in `models/` directory via llama.cpp‑style crate).[web:94][web:95][web:100]
+  - `LocalModelBackend` (GGUF in `models/` directory via llama.cpp‑style crate).
 - Implement model discovery:
   - Scan `models/` directory at startup.
   - Expose discovered local models in a `ModelCatalog`.
+- Design for single‑ and multi‑model modes:
+  - Support a single active backend in simple configurations.
+  - Add a composite `ModelBackend` that can fan out to multiple models in parallel for comparison, voting, or aggregation.
 - Error handling:
   - Map all backend errors into `CoreError` with precise `ErrorCode`s (no panics).
 
 **Exit criteria:**
 - Simple CLI harness can run `run_query` against each backend.
+- CLI (or config) can select between single‑model and multi‑model modes.
 - Bad config / missing models / network errors return well‑formed `CoreError`.
 
 ---
@@ -56,7 +60,7 @@ Northline is a safety‑critical, privacy‑first local AI assistant and researc
 **Goal:** Perplexity‑style answer generation via SearXNG + LLM.
 
 - Implement `Tool` for SearXNG:
-  - Calls self‑hosted SearXNG endpoint with query.[web:79][web:82]
+  - Calls self‑hosted SearXNG endpoint with query.
   - Returns structured search results (title, snippet, URL).
 - Implement core RAG flow in `fyin-core`:
   - Run SearXNG search.
@@ -85,14 +89,17 @@ Northline is a safety‑critical, privacy‑first local AI assistant and researc
 - Settings UI:
   - Provider selection (OpenAI/Ollama/LM Studio/Local).
   - Model selection (remote + discovered local models).
+  - Mode selection: single‑model or multi‑model comparison.
   - SearXNG settings.
   - Ghost Mode toggle.
 - Wiring:
   - Call `run_query` async on submit; stream `AnswerChunk`s into UI.
   - Show errors using `ErrorCode` + messages.
+  - In multi‑model mode, surface per‑model outputs and/or an aggregated answer.
 
 **Exit criteria:**
 - End‑to‑end flow works on desktop with at least one backend.
+- Multi‑model mode can be enabled from settings and used in a chat.
 - No panics; all failures visible as clean error dialogs.
 
 ---
@@ -105,15 +112,16 @@ Northline is a safety‑critical, privacy‑first local AI assistant and researc
   - No disk writes (no config, no history).
   - Logging disabled or in‑memory only.
 - Encryption:
-  - Use `northline-crypto` for config at rest (AEAD).[web:72][web:73]
+  - Use `northline-crypto` for config at rest (AEAD).
 - Tests:
   - Integration tests for:
     - Config missing/invalid.
     - Provider failures.
     - SearXNG failures.
     - Local model load failures.
+    - Multi‑model comparison mode (success and failure paths).
   - All tests in `tests/` dirs, no inline tests.
 
 **Exit criteria:**
 - CI enforcing no `unwrap`/`expect`/`panic!` in core/crypto/desktop.
-- `cargo test` + `cargo audit` clean.[web:73][web:76]
+- `cargo test` + `cargo audit` clean.

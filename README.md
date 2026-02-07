@@ -20,6 +20,7 @@ Northline is designed as a frozen, safety‑critical **kernel** you can build on
   - OpenAI‑compatible APIs (OpenAI, LM Studio, others).
   - Ollama for local models.  
   - Drop‑in local GGUF models from a `models/` directory.
+  - Optional multi-model mode to run several models in parallel for comparison and aggregation (accuracy-oriented).
 
 - **Deep web search with SearXNG**  
   Self‑hosted SearXNG as the primary search engine for RAG, configurable and privacy‑respecting.
