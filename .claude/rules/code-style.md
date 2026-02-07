@@ -1,7 +1,8 @@
 # Code Style – Northline
 
 - Language: Rust only.
-- Edition: 2021 or 2024.
+- Edition: 2024.
+- MSRV: 1.93.0.
 - Formatting: `cargo fmt` defaults.
 - Lints: fix all `cargo clippy` warnings unless explicitly documented.
 
@@ -24,3 +25,11 @@
 - Target ≤ 250 LOC per file; split modules before they get too large.
 - Name modules by function: `config`, `providers`, `tools`, `engine`, `errors`, etc.
 
+## Automated tooling
+
+When asked to “clean up code” or “run checks,” prefer running (or assuming the use of):
+
+- `cargo fmt`
+- `cargo clippy --workspace -- -D warnings`
+- `cargo test --workspace`
+- Additional tools mentioned in CLAUDE.md (audit, deny, etc.) as appropriate.
