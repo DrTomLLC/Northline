@@ -1,0 +1,9 @@
+[package]
+name = "northline-desktop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+slint = "1"
+northline-core = { path = "../core" }
+northline-crypto = { path = "../crypto" }
