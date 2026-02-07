@@ -11,17 +11,29 @@ Northline is a **safety‑critical, privacy‑first local AI assistant and resea
 
 Future versions add a Comet‑style browser host, but the v1 kernel API must remain stable.
 
-## Tech stack
+## Tech stack & toolchain
 
-- Language: Rust (edition 2024).
-- UI: Slint.
-- Crates:
-  - `core/` → `northline-core`
-  - `crypto/` → `northline-crypto`
-  - `desktop/` → `northline-desktop`
-- No C, C++, Zig, Node, or Docker code in this repo.
+- Language: Rust.
+- Edition: 2024.
+- Minimum supported Rust version (MSRV): **1.93.0**.
+- Toolchain pinned in `rust-toolchain.toml` (1.93.0 with `rustfmt`, `clippy`).
 
-## Absolute rules
+## AI tools allowed
+
+This repo will be edited using a combination of:
+
+- Claude Code (cloud + local).
+- Local LLMs (via LM Studio / Ollama / other).
+- Antigravity.
+- Gemini.
+- ChatGPT.
+
+**Preferences:**
+
+- Use **local AI** as much as possible (no limits, free once the stack is working).
+- Cloud tools are allowed but must still respect all project rules.
+
+## Absolute rules for generated code
 
 When generating or editing code:
 
@@ -32,10 +44,10 @@ When generating or editing code:
 2. **Safety‑critical error handling**
    - Every public function that can fail must have a documented error path.
    - Use typed error enums with machine‑readable `ErrorCode` and human‑readable `message`.
-   - No silent fallbacks or swallowing errors.
+   - No silent fallbacks or swallowed errors.
 
 3. **Privacy and security**
-   - Never log secrets, prompts, or full URLs; logs may contain only high‑level event info.
+   - Never log secrets, prompts, or full URLs.
    - Use vetted crypto/secrets crates; no home‑grown cryptography.[web:72][web:73]
    - Ghost Mode must:
      - Write nothing to disk.
@@ -44,30 +56,65 @@ When generating or editing code:
 
 4. **Modular, small files**
    - Each module does one thing.
-   - Target ≤ 250 LOC per file; 400 LOC is a hard ceiling; split files before exceeding.
+   - Target ≤ 250 LOC per file; 400 LOC is a hard ceiling; split before exceeding.
 
-5. **Tests**
-   - All tests live under `tests/` directories, not inline.
-   - Tests should return `Result<(), TestError>` and use `?` instead of `unwrap`.
+5. **Tests and bug workflow**
+   - For ANY bug or incorrect behavior:
+     1. Write or extend tests that reproduce the failure.
+     2. Verify tests fail.
+     3. Fix the code.
+     4. Verify tests pass.
+   - This applies to logic errors, edge cases, and runtime failures.
+
+6. **Rust‑only implementation**
+   - No C, C++, Zig, Node, or Docker code in this repo.
+   - If bindings to native libraries are needed (e.g., llama.cpp for GGUF), keep them behind small, well‑tested Rust wrappers.
+
+## Automated tool pipeline
+
+When instructed to “run tools” (locally or in CI), the expected sequence is:
+
+1. `cargo fmt`
+2. `cargo clippy --workspace -- -D warnings`
+3. `cargo test --workspace`
+4. `cargo nextest run` (if configured)[web:173]
+5. `cargo llvm-cov` (coverage, if configured)
+6. `cargo audit`
+7. `cargo deny check`
+8. `cargo vet`
+9. `cargo geiger` (unsafe usage report)
+10. `cargo careful` (where applicable)
+11. `cargo udeps`
+12. `cargo outdated`
+13. `cargo machete`
+14. `cargo semver-checks` (for API changes)
+15. `cargo mutants` (for mutation testing, on selected crates)[web:73][web:76][web:173]
+
+**Behavior:**
+
+- Run tools in the above order where configured.
+- If any tool is not installed, fails to run, or is temporarily broken:
+  - **Do not stop the pipeline.**
+  - Skip that tool, record the failure in logs and/or a TODO comment, and continue with the next tool.
+- The goal is: **no single tool failure blocks forward progress**, but all failures are visible and documented.
 
 ## What to do first in this repo
 
 When asked to “start implementing Northline”:
 
-1. **Set up the Cargo workspace** with crates:
-   - `core/`, `crypto/`, `desktop/` as described in `ROADMAP.md` and `docs/ARCHITECTURE.md`.
-2. **Define public types and traits** in `northline-core` following `docs/ARCHITECTURE.md`.
-3. **Define crypto interfaces** in `northline-crypto`.
-4. **Create a minimal Slint UI skeleton** in `northline-desktop`.
+1. Set up or confirm the Cargo workspace (`core`, `crypto`, `desktop`).
+2. Define public types and traits in `northline-core` following `docs/ARCHITECTURE.md`.
+3. Define crypto interfaces in `northline-crypto`.
+4. Create a minimal Slint UI skeleton in `northline-desktop`.
 
-Do **not** skip straight to complex features (RAG, browser host) until the kernel API and basic structure compile and pass `cargo fmt` and `cargo clippy`.
+Do NOT jump directly to complex features (RAG, browser host) until the kernel API compiles and passes `cargo fmt` and `cargo clippy`.
 
-## Helpful references in this repo
+## Internal references
 
-- `README.md` – high‑level description.
-- `ROADMAP.md` – milestones and priorities.
-- `CONTRIBUTING.md` – rules for coding and tests.
-- `docs/ARCHITECTURE.md` – kernel API spec.
-- `docs/SECURITY.md` – security, encryption, Ghost Mode.
+- `RULES.md`
+- `CONTRIBUTING.md`
+- `docs/ARCHITECTURE.md`
+- `docs/SECURITY.md`
+- `.claude/rules/*`
 
-Always prefer following these docs over “being clever”.
+When in doubt, these docs override any AI suggestion.
